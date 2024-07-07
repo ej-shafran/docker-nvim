@@ -1,0 +1,21 @@
+---
+name: Type Check Code
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - synchronize
+      - opened
+
+jobs:
+  check:
+    name: Type Check Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Type Check Code
+        uses: mrcjkb/lua-typecheck-action@v1

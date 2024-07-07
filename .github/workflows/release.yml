@@ -1,0 +1,50 @@
+---
+name: Release
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  luarocks-release:
+    name: Luarocks Release
+    runs-on: ubuntu-latest
+    if: github.event.repository.fork == false && secrets.LUAROCKS_API_KEY != null
+    env:
+      LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Luarocks Release
+        uses: nvim-neorocks/luarocks-tag-release@v7
+
+  github-release:
+    name: GitHub Release
+    runs-on: ubuntu-latest
+    if: github.event.repository.fork == false
+    permissions:
+      contents: write
+
+    steps:
+      - name: Setup Security
+        uses: step-security/harden-runner@v2
+        with:
+          allowed-endpoints:
+            api.github.com:443
+            github.com:443
+      - name: Get Version From Tag
+        id: tag_name
+        run: echo "current_version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+        shell: bash
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Read CHANGELOG.md
+        uses: mindsers/changelog-reader-action@v2
+        id: changelog_reader
+        with:
+          version: ${{ steps.tag_name.outputs.current_version }}
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ steps.changelog_reader.outputs.changes }}
