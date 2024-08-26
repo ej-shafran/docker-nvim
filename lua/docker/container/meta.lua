@@ -1,0 +1,359 @@
+---@meta _
+error('Cannot require meta file')
+
+---A summary of a docker container, returned by `docker container ls`.
+---@class docker.container.Summary
+---
+---Container ID
+---@field ID         string
+---
+---Image ID
+---@field Image      string
+---
+---Quoted command
+---@field Command    string
+---
+---Time when the container was created.
+---@field CreatedAt  string
+---
+---Elapsed time since the container was started.
+---@field RunningFor string
+---
+---Exposed ports.
+---@field Ports      string
+---
+---Container status (for example; "created", "running", "exited").
+---@field State      string
+---
+---Container status with details about duration and health-status.
+---@field Status     string
+---
+---Container disk size.
+---@field Size       string
+---
+---Container names.
+---@field Names      string
+---
+---All labels assigned to the container.
+---@field Labels     string
+---
+---Value of a specific label for this container. For example '{{.Label "com.docker.swarm.cpu"}}'
+---@field Label      string
+---
+---Names of the volumes mounted in this container.
+---@field Mounts     string
+---
+---Names of the networks attached to this container.
+---@field Networks   string
+
+---Options for `docker container ls`
+---@class docker.container.ls.Opts
+---
+---Show all containers (default shows just running)
+---@field all?    boolean
+---
+---Filter output based on conditions provided
+---@field filter? table<string, string>
+---
+---Show n last created containers (includes all states)
+---@field last?   integer
+---
+---Show the latest created container (includes all states)
+---@field latest? boolean
+---
+---Display total file sizes
+---@field size?   boolean
+
+---Options for `docker container run`
+---@class docker.container.run.Opts
+---
+---Add a custom host-to-IP mapping
+---@field add_host?              docker.HostToIP[]
+---
+---Attach to STDIN, STDOUT or STDERR
+---@field attach?                ("STDIN"|"STDOUT"|"STDERR")[]
+---
+---Block IO (relative weight), between 10 and 1000, or 0 to disable.
+---@field blkio_weight?          integer
+---
+---Block IO weight (relative device weight)
+---@field blkio_weight_device?   string[]
+---
+---Add Linux capabilities
+---@field cap_add?               string[]
+---
+---Drop Linux capabilities
+---@field cap_drop?              string[]
+---
+---Optional parent cgroup for the container
+---@field cgroup_parent?         string
+---
+---Cgroup namespace to use
+---'host':    Run the container in the Docker host's cgroup namespace
+---'private': Run the container in its own private cgroup namespace
+---nil:        Use the cgroup namespace as configured by the default-cgroupns-mode
+---@field cgroupns?              "host"|"private"
+---
+---Write the container ID to the file
+---@field cidfile?               string
+---
+---Limit CPU CFS (Completely Fair Scheduler) period
+---@field cpu_period?            integer
+---
+---Limit CPU CFS (Completely Fair Scheduler) quota
+---@field cpu_quota?             integer
+---
+---Limit CPU real-time period in microseconds
+---@field cpu_rt_period?         integer
+---
+---Limit CPU real-time runtime in microseconds
+---@field cpu_rt_runtime?        integer
+---
+---CPU shares (relative weight)
+---@field cpu_shares?            integer
+---
+---Number of CPUs
+---@field cpus?                  decimal
+---
+---CPUs in which to allow execution (0-3, 0,1)
+---@field cpuset_cpus?           string
+---
+---MEMs in which to allow execution (0-3, 0,1)
+---@field cpuset_mems?           string
+---
+---Run container in background and print container ID
+---@field detach?                boolean
+---
+---Override the key sequence for detaching a container
+---@field detach_keys?           string
+---
+---Add a host device to the container
+---@field device?                string[]
+---
+---Add a rule to the cgroup allowed devices list
+---@field device_cgroup_rule?    string[]
+---
+---Limit read rate (bytes per second) from a device (default [])
+---@field device_read_bps?       string[]
+---
+---Limit read rate (IO per second) from a device (default [])
+---@field device_read_iops?      string[]
+---
+---Limit write rate (bytes per second) to a device (default [])
+---@field device_write_bps?      string[]
+---
+---Limit write rate (IO per second) to a device (default [])
+---@field device_write_iops?     string[]
+---
+---Skip image verification (default true)
+---@field disable_content_trust? boolean
+---
+---Set custom DNS servers
+---@field dns?                   string[]
+---
+---Set DNS options
+---@field dns_option?            string[]
+---
+---Set custom DNS search domains
+---@field dns_search?            string[]
+---
+---Container NIS domain name
+---@field domainname?            string
+---
+---Overwrite the default ENTRYPOINT of the image
+---@field entrypoint?            string
+---
+---Set environment variables
+---@field env?                   table<string, string>
+---
+---Read in a file of environment variables
+---@field env_file?              string[]
+---
+---Expose a port or a range of ports
+---@field expose?                string[]
+---
+---GPU devices to add to the container ('all' to pass all GPUs)
+---@field gpus?                  string[]
+---
+---Add additional groups to join
+---@field group_add?             string[]
+---
+---Command to run to check health
+---@field health_cmd?            string
+---
+---Time between running the check (ms|s|m|h) (default 0s)
+---@field health_interval?       docker.Duration
+---
+---Consecutive failures needed to report unhealthy
+---@field health_retries?        integer
+---
+---Start period for the container to initialize before starting health-retries countdown (ms|s|m|h) (default 0s)
+---@field health_start_period?   docker.Duration
+---
+---Maximum time to allow one check to run (ms|s|m|h) (default 0s)
+---@field health_timeout?        docker.Duration
+---
+---Container host name
+---@field hostname?              string
+---
+---Run an init inside the container that forwards signals and reaps processes
+---@field init?                  boolean
+---
+---Keep STDIN open even if not attached
+---@field interactive?           boolean
+---
+---IPv4 address (e.g., 172.30.100.104)
+---@field ip?                    string
+---
+---IPv6 address (e.g., 2001:db8::33)
+---@field ip6?                   string
+---
+---IPC mode to use
+---@field ipc?                   string
+---
+---Container isolation technology
+---@field isolation?             string
+---
+---Kernel memory limit
+---@field kernel_memory?         docker.Bytes
+---
+---Set meta data on a container
+---@field label?                 string[]
+---
+---Read in a line delimited file of labels
+---@field label_file?            string[]
+---
+---Add link to another container
+---@field link?                  string[]
+---
+---Container IPv4/IPv6 link-local addresses
+---@field link_local_ip?         string[]
+---
+---Logging driver for the container
+---@field log_driver?            string
+---
+---Log driver options
+---@field log_opt?               string[]
+---
+---Container MAC address (e.g., 92:d0:c6:0a:29:33)
+---@field mac_address?           string
+---
+---Memory limit
+---@field memory?                docker.Bytes
+---
+---Memory soft limit
+---@field memory_reservation?    docker.Bytes
+---
+---Swap limit equal to memory plus swap: '-1' to enable unlimited swap
+---@field memory_swap?           docker.Bytes
+---
+---Tune container memory swappiness (0 to 100) (default -1)
+---@field memory_swappiness?     integer
+---
+---Attach a filesystem mount to the container
+---@field mount?                 string
+---
+---Assign a name to the container
+---@field name?                  string
+---
+---Connect a container to a network
+---@field network?               string
+---
+---Add network-scoped alias for the container
+---@field network_alias?         string
+---
+---Disable any container-specified HEALTHCHECK
+---@field no_healthcheck?        boolean
+---
+---Disable OOM Killer
+---@field oom_kill_disable?          boolean
+---
+---Tune host's OOM preferences (-1000 to 1000)
+---@field oom_score_adj?         integer
+---
+---PID namespace to use
+---@field pid?                   string
+---
+---Tune container pids limit (set -1 for unlimited)
+---@field pids_limit?            integer
+---
+---Set platform if server is multi-platform capable
+---@field platform?              string
+---
+---Give extended privileges to this container
+---@field privileged?            boolean
+---
+---Publish a container's port(s) to the host
+---@field publish?               docker.PortMap[]
+---
+---Publish all exposed ports to random ports
+---@field publish_all?           boolean
+---
+---Pull image before running
+---@field pull?                  "always"|"missing"|"never"
+---
+---Suppress the pull output
+---@field quiet?                 boolean
+---
+---Mount the container's root filesystem as read only
+---@field read_only?             boolean
+---
+---Restart policy to apply when a container exits (default "no")
+---@field restart?               string
+---
+---Automatically remove the container when it exits
+---@field rm?                    boolean
+---
+---Runtime to use for this container
+---@field runtime?               string
+---
+---Security Options
+---@field security_opt?          string[]
+---
+---Size of /dev/shm
+---@field shm_size?              docker.Bytes
+---
+---Proxy received signals to the process (default true)
+---@field sig_proxy?             boolean
+---
+---Signal to stop the container
+---@field stop_signal?           string
+---
+---Timeout (in seconds) to stop a container
+---@field stop_timeout?          integer
+---
+---Storage driver options for the container
+---@field storage_opt?           string[]
+---
+---Sysctl options (default map[])
+---@field sysctl?                string[]
+---
+---Mount a tmpfs directory
+---@field tmpfs?                 string[]
+---
+---Allocate a pseudo-TTY
+---@field tty?                   boolean
+---
+---Ulimit options (default [])
+---@field ulimit?                string[]
+---
+---Username or UID (format: <name|uid>[:<group|gid>])
+---@field user?                  string
+---
+---User namespace to use
+---@field userns?                string
+---
+---UTS namespace to use
+---@field uts?                   string
+---
+---Bind mount a volume
+---@field volume?                string[]
+---
+---Optional volume driver for the container
+---@field volume_driver?         string
+---
+---Mount volumes from the specified container(s)
+---@field volumes_from?          string[]
+---
+---Working directory inside the container
+---@field workdir?               string

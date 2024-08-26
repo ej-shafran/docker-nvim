@@ -1,0 +1,119 @@
+---@meta _
+error('Cannot require meta file')
+
+---A summary of a docker image, returned by `docker image ls`.
+---@class docker.image.Summary
+---
+---Image ID
+---@field ID           string
+---
+---Image repository
+---@field Repository   string
+---
+---Image tag
+---@field Tag          string
+---
+---Image digest
+---@field Digest       string
+---
+---Elapsed time since the image was created
+---@field CreatedSince string
+---
+---Time when the image was created
+---@field CreatedAt    string
+---
+---Image disk size
+---@field Size         string
+
+---Options for `docker image ls`
+---@class docker.image.ls.Opts
+---
+---Show all images (default hides intermediate images)
+---@field all?     boolean
+---
+---Show digests
+---@field digests? boolean
+---
+---Filter output based on conditions provided
+---@field filter?  table<string, string>
+
+---Options for `docker image build`
+---@class docker.image.build.Opts
+---
+---Add a custom host-to-IP mapping (format: "host:ip")
+---@field add_host?       docker.HostToIP[]
+---
+---Allow extra privileged entitlement (e.g., "network.host", "security.insecure")
+---@field allow?          string[]
+---
+---Attestation parameters (format: "type=sbom,generator=image")
+---@field attest?         string[]
+---
+---Set build-time variables
+---@field build_arg?      string[]
+---
+---Additional build contexts (e.g., name=path)
+---@field build_context?  table<string, string>
+---
+---Override the configured builder instance (default "default")
+---@field builder?        string
+---
+---External cache sources (e.g., "user/app:cache", "type=local,src=path/to/dir")
+---@field cache_from?     string[]
+---
+---Cache export destinations (e.g., "user/app:cache", "type=local,dest=path/to/dir")
+---@field cache_to?       string[]
+---
+---Optional parent cgroup for the container
+---@field cgroup_parent?  string
+---
+---Name of the Dockerfile (default: "PATH/Dockerfile")
+---@field file?           string
+---
+---Write the image ID to the file
+---@field iidfile?        string
+---
+---Set metadata for an image
+---@field label?          string[]
+---
+---Write build result metadata to the file
+---@field metadata_file?  string
+---
+---Set the networking mode for the "RUN" instructions during build (default "default")
+---@field network?        string
+---
+---Do not use cache when building the image
+---@field no_cache?       boolean
+---
+---Do not cache specified stages
+---@field no_cache_filter?string[]
+---
+---Output destination (format: "type=local,dest=path")
+---@field output?         string[]
+---
+---Set target platform for build
+---@field platform?       string[]
+---
+---Always attempt to pull all referenced images
+---@field pull?           boolean
+---
+---Suppress the build output and print image ID on success
+---@field quiet?          boolean
+---
+---Secret to expose to the build (format: "id=mysecret[,src=/local/secret]")
+---@field secret?         string[]
+---
+---Size of "/dev/shm"
+---@field shm_size?       docker.Bytes
+---
+---SSH agent socket or keys to expose to the build (format: "default|<id>[=<socket>|<key>[,<key>]]")
+---@field ssh?            string[]
+---
+---Name and optionally a tag (format: "name:tag")
+---@field tag?            string[]
+---
+---Set the target build stage to build
+---@field target?         string
+---
+---Ulimit options (default [])
+---@field ulimit?         string[]
