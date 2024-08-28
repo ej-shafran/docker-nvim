@@ -117,3 +117,11 @@ error('Cannot require meta file')
 ---
 ---Ulimit options (default [])
 ---@field ulimit?         string[]
+
+---@class docker.image.rm.Opts
+---
+---Force removal of the image
+---@field force?    boolean
+---
+---Do not delete untagged parents
+---@field no_prune? boolean

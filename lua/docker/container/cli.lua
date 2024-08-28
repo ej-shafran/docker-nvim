@@ -1,6 +1,7 @@
+local container = {}
+
 local Command = require('docker.command')
 
-local container = {}
 ---@param cmd string[]
 ---@param _ docker.container.ls.Opts
 local function ls_handler(cmd, _)
@@ -137,5 +138,29 @@ container.run = Command.new({ 'container', 'run' })
   :add_option('volume_driver', 'string')
   :add_option('workdir', 'string')
   :build_with_arg(run_handler)
+
+---@param cmd string[]
+---@param _ docker.container.attach.Opts
+local function attach_handler(cmd, _)
+  vim.cmd(('edit term://%s'):format(vim.fn.join(cmd)))
+end
+
+container.attach = Command.new({ 'container', 'attach' })
+  :add_option('detach_keys', 'string')
+  :add_option('no_stdin', 'boolean')
+  :add_option('sig_proxy', 'boolean')
+  :build_with_arg(attach_handler)
+
+---@param cmd string[]
+---@param _ docker.container.stop.Opts
+local function stop_handler(cmd, _)
+  local result = vim.system(cmd, { text = true }):wait()
+  assert(result.code == 0, result.stderr)
+end
+
+container.stop = Command.new({ 'container', 'stop' })
+  :add_option('signal', 'string')
+  :add_option('time', 'number')
+  :build_with_args(stop_handler)
 
 return container

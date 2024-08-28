@@ -26,7 +26,7 @@
 ---@class docker.Command
 ---
 ---@field private _command string[]
----@field private _arg_count integer
+---@field private _arg_kind "none"|"one"|"variable"
 ---@field private _options table<string, docker.command.Serialize>
 ---@field private _validators table<string, docker.command.Validator>
 local Command = {}
@@ -157,7 +157,7 @@ local type_to_validator = {
 function Command._new(_command)
   ---@type docker.Command
   local obj = {
-    _arg_count = 0,
+    _arg_kind = 'none',
     _options = {},
     _command = _command,
     _validators = {},
@@ -171,7 +171,11 @@ end
 ---@param args string[]
 ---@param opts unknown
 function Command:_validate(args, opts)
-  assert(#args == self._arg_count, ('expected %d arguments, got %d'):format(self._arg_count, #args))
+  if self._arg_kind == 'none' then
+    assert(#args == 0)
+  elseif self._arg_kind == 'one' then
+    assert(#args == 1)
+  end
 
   local spec = {}
   for key, validator in pairs(self._validators) do
@@ -303,25 +307,35 @@ end
 ---@param cb fun(cmd: string[], opts: O): T
 ---@return fun(opts?: O): T
 function Command:build(cb)
-  return function(...)
-    local raw_args = { ... }
-    local args = vim.list_slice(raw_args, 0, self._arg_count)
-    local opts = raw_args[self._arg_count + 1]
+  return function(opts_or_args, maybe_opts)
+    local args
+    local opts
+    if self._arg_kind == 'none' then
+      args = {}
+      opts = opts_or_args
+    elseif self._arg_kind == 'one' then
+      args = { opts_or_args }
+      opts = maybe_opts
+    else
+      args = opts_or_args
+      opts = maybe_opts
+    end
     opts = opts or {}
 
     self:_validate(args, opts)
 
     local cmd = self:_serialize(args, opts)
 
-    print(vim
-      .iter(cmd)
-      :map(function(word)
-        if string.match(word, '%s+') ~= nil then
-          return vim.fn.shellescape(word)
-        end
-        return word
-      end)
-      :join(' '))
+    -- TODO: logging
+    -- print(vim
+    --   .iter(cmd)
+    --   :map(function(word)
+    --     if string.match(word, '%s+') ~= nil then
+    --       return vim.fn.shellescape(word)
+    --     end
+    --     return word
+    --   end)
+    --   :join(' '))
 
     return cb and cb(cmd, opts) or cmd
   end
@@ -335,7 +349,7 @@ end
 ---@param cb fun(cmd: string[], opts: O): T
 ---@return fun(arg: string, opts?: O): T
 function Command:build_with_arg(cb)
-  self._arg_count = 1
+  self._arg_kind = 'one'
   return self:build(cb)
 end
 
@@ -344,11 +358,10 @@ end
 ---@generic T
 ---@generic O
 ---
----@param count integer
 ---@param cb fun(cmd: string[], opts: O): T
 ---@return fun(args: string[], opts?: O): T
-function Command:build_with_args(count, cb)
-  self._arg_count = count
+function Command:build_with_args(cb)
+  self._arg_kind = 'variable'
   return self:build(cb)
 end
 

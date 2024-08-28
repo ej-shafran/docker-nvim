@@ -357,3 +357,22 @@ error('Cannot require meta file')
 ---
 ---Working directory inside the container
 ---@field workdir?               string
+
+---@class docker.container.attach.Opts
+---
+---Override the key sequence for detaching a container
+---@field detach_keys? string
+---
+---Do not attach STDIN
+---@field no_stdin?    boolean
+---
+---Proxy all received signals to the process
+---@field sig_proxy?   boolean
+
+---@class docker.container.stop.Opts
+---
+---Signal to send to the container
+---@field signal? string
+---
+---Seconds to wait before killing the container
+---@field time?   integer
