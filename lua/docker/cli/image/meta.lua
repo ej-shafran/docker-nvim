@@ -24,3 +24,24 @@ error('Cannot require meta file')
 ---
 ---Image disk size
 ---@field Size         string
+
+---A history of a docker image, returned by `docker image history`
+---@class docker.cli.image.History
+---
+---Image ID
+---@field ID string
+---
+---Elapsed time since the image was created if --human=true, otherwise timestamp of when image was created
+---@field CreatedSince string
+---
+---Timestamp of when image was created
+---@field CreatedAt string
+---
+---Command that was used to create the image
+---@field CreatedBy string
+---
+---Image disk size
+---@field Size string
+---
+---Comment for image
+---@field Comment string
