@@ -26,7 +26,8 @@
 ---@class docker.Command
 ---
 ---@field private _command string[]
----@field private _arg_kind "none"|"one"|"variable"
+---@field private _arg_kind "fixed"|"variable"
+---@field private _arg_count integer|{ max?: integer, min?: integer }
 ---@field private _options table<string, docker.command.Serialize>
 ---@field private _validators table<string, docker.command.Validator>
 local Command = {}
@@ -157,7 +158,8 @@ local type_to_validator = {
 function Command._new(_command)
   ---@type docker.Command
   local obj = {
-    _arg_kind = 'none',
+    _arg_kind = 'fixed',
+    _arg_count = 0,
     _options = {},
     _command = _command,
     _validators = {},
@@ -310,15 +312,35 @@ function Command:build(cb)
   return function(opts_or_args, maybe_opts)
     local args
     local opts
-    if self._arg_kind == 'none' then
-      args = {}
-      opts = opts_or_args
-    elseif self._arg_kind == 'one' then
-      args = { opts_or_args }
-      opts = maybe_opts
+    if self._arg_kind == 'fixed' then
+      assert(self._arg_count == 0 or self._arg_count == 1)
+
+      if self._arg_count == 0 then
+        args = {}
+        opts = opts_or_args
+      elseif self._arg_count == 1 then
+        args = { opts_or_args }
+        opts = maybe_opts
+      end
     else
+      assert(type(self._arg_count) == 'table')
+
       args = opts_or_args
       opts = maybe_opts
+
+      if self._arg_count.min then
+        assert(
+          #args > self._arg_count.min,
+          ('invalid number of arguments; expected at least %d, got %d'):format(self._arg_count.min, #args)
+        )
+      end
+
+      if self._arg_count.max then
+        assert(
+          #args <= self._arg_count.max,
+          ('invalid number of arguments; expected at most %d, got %d'):format(self._arg_count.max, #args)
+        )
+      end
     end
     opts = opts or {}
 
@@ -349,7 +371,7 @@ end
 ---@param cb fun(cmd: string[], opts: O): T
 ---@return fun(arg: string, opts?: O): T
 function Command:build_with_arg(cb)
-  self._arg_kind = 'one'
+  self._arg_count = 1
   return self:build(cb)
 end
 
@@ -359,9 +381,11 @@ end
 ---@generic O
 ---
 ---@param cb fun(cmd: string[], opts: O): T
+---@param count? { min?: integer, max?: integer }
 ---@return fun(args: string[], opts?: O): T
-function Command:build_with_args(cb)
+function Command:build_with_args(cb, count)
   self._arg_kind = 'variable'
+  self._arg_count = count or {}
   return self:build(cb)
 end
 
