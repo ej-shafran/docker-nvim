@@ -1,0 +1,47 @@
+---@meta _
+error('Cannot require meta file')
+
+---A summary of a docker container, returned by `docker container ls`.
+---@class docker.cli.container.Summary
+---
+---Container ID
+---@field ID         string
+---
+---Image ID
+---@field Image      string
+---
+---Quoted command
+---@field Command    string
+---
+---Time when the container was created.
+---@field CreatedAt  string
+---
+---Elapsed time since the container was started.
+---@field RunningFor string
+---
+---Exposed ports.
+---@field Ports      string
+---
+---Container status (for example; "created", "running", "exited").
+---@field State      string
+---
+---Container status with details about duration and health-status.
+---@field Status     string
+---
+---Container disk size.
+---@field Size       string
+---
+---Container names.
+---@field Names      string
+---
+---All labels assigned to the container.
+---@field Labels     string
+---
+---Value of a specific label for this container. For example '{{.Label "com.docker.swarm.cpu"}}'
+---@field Label      string
+---
+---Names of the volumes mounted in this container.
+---@field Mounts     string
+---
+---Names of the networks attached to this container.
+---@field Networks   string

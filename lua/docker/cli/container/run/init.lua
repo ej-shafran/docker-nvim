@@ -1,34 +1,7 @@
-local container = {}
-
 local Command = require('docker.command')
 
 ---@param cmd string[]
----@param _ docker.container.ls.Opts
-local function ls_handler(cmd, _)
-  local result = vim.system(cmd, { text = true }):wait()
-  assert(result.code == 0, result.stderr)
-  local stdout = assert(result.stdout)
-  local lines = vim.split(stdout, '\n')
-  ---@type docker.container.Summary[]
-  return vim
-    .iter(lines)
-    :filter(function(line)
-      return line ~= ''
-    end)
-    :map(vim.json.decode)
-    :totable()
-end
-
-container.ls = Command.new({ 'container', 'ls', '--format', 'json' })
-  :add_option('all', 'boolean')
-  :add_option('size', 'boolean')
-  :add_option('latest', 'boolean')
-  :add_option('last', 'number')
-  :add_option('filter', 'record')
-  :build(ls_handler)
-
----@param cmd string[]
----@param opts docker.container.run.Opts
+---@param opts docker.cli.container.run.Opts
 local function run_handler(cmd, opts)
   if opts.tty then
     vim.cmd(('edit term://%s'):format(vim.fn.join(cmd)))
@@ -40,7 +13,7 @@ local function run_handler(cmd, opts)
   })
 end
 
-container.run = Command.new({ 'container', 'run' })
+return Command.new({ 'container', 'run' })
   :add_list_option('add_host', 'host-to-ip')
   :add_list_option('attach', 'string')
   :add_list_option('blkio_weight_device', 'string')
@@ -138,29 +111,3 @@ container.run = Command.new({ 'container', 'run' })
   :add_option('volume_driver', 'string')
   :add_option('workdir', 'string')
   :build_with_arg(run_handler)
-
----@param cmd string[]
----@param _ docker.container.attach.Opts
-local function attach_handler(cmd, _)
-  vim.cmd(('edit term://%s'):format(vim.fn.join(cmd)))
-end
-
-container.attach = Command.new({ 'container', 'attach' })
-  :add_option('detach_keys', 'string')
-  :add_option('no_stdin', 'boolean')
-  :add_option('sig_proxy', 'boolean')
-  :build_with_arg(attach_handler)
-
----@param cmd string[]
----@param _ docker.container.stop.Opts
-local function stop_handler(cmd, _)
-  local result = vim.system(cmd, { text = true }):wait()
-  assert(result.code == 0, result.stderr)
-end
-
-container.stop = Command.new({ 'container', 'stop' })
-  :add_option('signal', 'string')
-  :add_option('time', 'number')
-  :build_with_args(stop_handler)
-
-return container
