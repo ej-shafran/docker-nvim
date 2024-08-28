@@ -1,17 +1,7 @@
 local Command = require('docker.command')
 
----@param cmd string[]
----@param opts docker.cli.container.run.Opts
-local function run_handler(cmd, opts)
-  if opts.tty then
-    vim.cmd(('edit term://%s'):format(vim.fn.join(cmd)))
-    return
-  end
-
-  return vim.system(cmd, {
-    text = opts.detach,
-  })
-end
+---@type docker.cli.container.run.Opts
+local _opts
 
 return Command.new({ 'container', 'run' })
   :add_list_option('add_host', 'host-to-ip')
@@ -110,4 +100,4 @@ return Command.new({ 'container', 'run' })
   :add_option('uts', 'string')
   :add_option('volume_driver', 'string')
   :add_option('workdir', 'string')
-  :build_with_arg(run_handler)
+  :build_with_arg(_opts)

@@ -1,12 +1,7 @@
 local Command = require('docker.command')
 
----@param cmd string[]
----@param opts docker.cli.image.build.Opts
-local function build_handler(cmd, opts)
-  return vim.system(cmd, {
-    text = opts.quiet,
-  })
-end
+---@type docker.cli.image.build.Opts
+local _opts
 
 return Command.new({ 'image', 'build' })
   :add_list_option('allow', 'string')
@@ -34,4 +29,4 @@ return Command.new({ 'image', 'build' })
   :add_option('quiet', 'boolean')
   :add_option('shm_size', 'bytes')
   :add_option('target', 'string')
-  :build_with_arg(build_handler)
+  :build_with_arg(_opts)

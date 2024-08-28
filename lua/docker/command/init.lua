@@ -33,6 +33,8 @@
 local Command = {}
 Command.__index = Command
 
+local Result = require('docker.command.result')
+
 ---Common serialization functions.
 ---@type table<docker.command.OptionType, docker.command.Serialize>
 local type_to_serialize = {
@@ -303,12 +305,11 @@ end
 
 ---Get the final result as a function which only receives options.
 ---
----@generic T
 ---@generic O
 ---
----@param cb fun(cmd: string[], opts: O): T
----@return fun(opts?: O): T
-function Command:build(cb)
+---@param _ O
+---@return fun(opts?: O): docker.command.Result
+function Command:build(_)
   return function(opts_or_args, maybe_opts)
     local args
     local opts
@@ -359,34 +360,32 @@ function Command:build(cb)
     --   end)
     --   :join(' '))
 
-    return cb and cb(cmd, opts) or cmd
+    return Result.new(cmd)
   end
 end
 
 ---Get the final result as a function which receives options and a single argument.
 ---
----@generic T
 ---@generic O
 ---
----@param cb fun(cmd: string[], opts: O): T
----@return fun(arg: string, opts?: O): T
-function Command:build_with_arg(cb)
+---@param _ O
+---@return fun(arg: string, opts?: O): docker.command.Result
+function Command:build_with_arg(_)
   self._arg_count = 1
-  return self:build(cb)
+  return self:build(_)
 end
 
 ---Get the final result as a function which receives options and a certain amount of arguments.
 ---
----@generic T
 ---@generic O
 ---
----@param cb fun(cmd: string[], opts: O): T
+---@param _ O
 ---@param count? { min?: integer, max?: integer }
----@return fun(args: string[], opts?: O): T
-function Command:build_with_args(cb, count)
+---@return fun(args: string[], opts?: O): docker.command.Result
+function Command:build_with_args(_, count)
   self._arg_kind = 'variable'
   self._arg_count = count or {}
-  return self:build(cb)
+  return self:build(_)
 end
 
 return Command
