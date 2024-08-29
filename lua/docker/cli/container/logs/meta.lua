@@ -1,0 +1,22 @@
+---@meta _
+error('Cannot require meta file')
+
+---@class docker.cli.container.logs.Opts
+---
+---Show extra details provided to logs
+---@field details? boolean
+---
+---Follow log output
+---@field follow? boolean
+---
+---Show logs since timestamp (e.g. "2013-01-02T13:23:37Z") or relative (e.g. "42m" for 42 minutes)
+---@field since? string
+---
+---Number of lines to show from the end of the logs (default "all")
+---@field tail? string
+---
+---Show timestamps
+---@field timestamps? boolean
+---
+---Show logs before a timestamp (e.g. "2013-01-02T13:23:37Z") or relative (e.g. "42m" for 42 minutes)
+---@field until? string

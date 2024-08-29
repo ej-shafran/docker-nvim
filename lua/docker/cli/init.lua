@@ -1,3 +1,4 @@
+---@class docker.cli
 local cli = {}
 
 cli.container = require('docker.cli.container')

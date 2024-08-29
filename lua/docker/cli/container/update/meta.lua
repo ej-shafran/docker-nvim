@@ -1,0 +1,46 @@
+---@meta _
+error('Cannot require meta file')
+
+---@class docker.cli.container.update.Opts
+---
+---Block IO (relative weight), between 10 and 1000, or 0 to disable (default 0)
+---@field blkio_weight? integer
+---
+---Limit CPU CFS (Completely Fair Scheduler) period
+---@field cpu_period? integer
+---
+---Limit CPU CFS (Completely Fair Scheduler) quota
+---@field cpu_quota? integer
+---
+---Limit the CPU real-time period in microseconds
+---@field cpu_rt_period? integer
+---
+---Limit the CPU real-time runtime in microseconds
+---@field cpu_rt_runtime? integer
+---
+---CPU shares (relative weight)
+---@field cpu_shares? integer
+---
+---Number of CPUs
+---@field cpus? decimal
+---
+---CPUs in which to allow execution (0-3, 0,1)
+---@field cpuset_cpus? string
+---
+---MEMs in which to allow execution (0-3, 0,1)
+---@field cpuset_mems? string
+---
+---Memory limit
+---@field memory? docker.Bytes
+---
+---Memory soft limit
+---@field memory_reservation? docker.Bytes
+---
+---Swap limit equal to memory plus swap: -1 to enable unlimited swap
+---@field memory_swap? docker.Bytes
+---
+---Tune container pids limit (set -1 for unlimited)
+---@field pids_limit? integer
+---
+---Restart policy to apply when a container exits
+---@field restart? string

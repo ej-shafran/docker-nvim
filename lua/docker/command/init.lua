@@ -331,7 +331,7 @@ function Command:build(_)
 
       if self._arg_count.min then
         assert(
-          #args > self._arg_count.min,
+          #args >= self._arg_count.min,
           ('invalid number of arguments; expected at least %d, got %d'):format(self._arg_count.min, #args)
         )
       end

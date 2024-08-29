@@ -1,3 +1,4 @@
+---@class docker.cli.image
 local image = {}
 
 image.build = require('docker.cli.image.build')

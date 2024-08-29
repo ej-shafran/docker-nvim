@@ -53,13 +53,29 @@ function Result:get_json_lines()
     :totable()
 end
 
----@param opts vim.api.keyset.cmd
+---@param opts? vim.api.keyset.cmd
 function Result:in_terminal(opts)
   opts = opts or {}
   vim.cmd(vim.tbl_extend('error', opts, {
     cmd = 'edit',
     args = { ('term://%s'):format(vim.fn.join(self._cmd)) },
   }))
+end
+
+---@param logger? fun(cmd: string)
+---@return docker.command.Result
+function Result:log(logger)
+  logger = logger or vim.print
+  logger(vim
+    .iter(self._cmd)
+    :map(function(word)
+      if string.match(word, '%s+') ~= nil then
+        return vim.fn.shellescape(word)
+      end
+      return word
+    end)
+    :join(' '))
+  return self
 end
 
 return Result

@@ -1,8 +1,30 @@
+---@class docker.cli.container
 local container = {}
 
 container.attach = require('docker.cli.container.attach')
+container.commit = require('docker.cli.container.commit')
+container.cp = require('docker.cli.container.cp')
+container.create = require('docker.cli.container.create')
+container.diff = require('docker.cli.container.diff')
+container.exec = require('docker.cli.container.exec')
+container.export = require('docker.cli.container.export')
+container.inspect = require('docker.cli.container.inspect')
+container.kill = require('docker.cli.container.kill')
+container.logs = require('docker.cli.container.logs')
 container.ls = require('docker.cli.container.ls')
+container.pause = require('docker.cli.container.pause')
+container.port = require('docker.cli.container.port')
+container.prune = require('docker.cli.container.prune')
+container.rename = require('docker.cli.container.rename')
+container.restart = require('docker.cli.container.restart')
+container.rm = require('docker.cli.container.rm')
 container.run = require('docker.cli.container.run')
+container.start = require('docker.cli.container.start')
+container.stats = require('docker.cli.container.stats')
 container.stop = require('docker.cli.container.stop')
+container.top = require('docker.cli.container.top')
+container.unpause = require('docker.cli.container.unpause')
+container.update = require('docker.cli.container.update')
+container.wait = require('docker.cli.container.wait')
 
 return container

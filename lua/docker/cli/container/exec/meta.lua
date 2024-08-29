@@ -1,0 +1,31 @@
+---@meta _
+error('Cannot require meta file')
+
+---@class docker.cli.container.exec.Opts
+---
+---Detached mode: run command in the background
+---@field detach? boolean
+---
+---Override the key sequence for detaching a container
+---@field detach_keys? string
+---
+---Set environment variables
+---@field env? table<string,string>
+---
+---Read in a file of environment variables
+---@field env_file? string[]
+---
+---Keep STDIN open even if not attached
+---@field interactive? boolean
+---
+---Give extended privileges to the command
+---@field privileged? boolean
+---
+---Allocate a pseudo-TTY
+---@field tty? boolean
+---
+---Username or UID (format: "<name|uid>[:<group|gid>]")
+---@field user? string
+---
+---Working directory inside the container
+---@field workdir? string
