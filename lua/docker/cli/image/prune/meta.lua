@@ -8,3 +8,6 @@ error('Cannot require meta file')
 ---
 ---Provide filter values (e.g. "until=<timestamp>")
 ---@field filter? table<string, string>
+---
+---Do not prompt for confirmation
+---@field force? boolean
