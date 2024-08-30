@@ -4,7 +4,7 @@ local Command = require('docker.command')
 local _opts
 
 return Command.new({ 'image', 'prune' })
-  :add_option('force', 'boolean')
-  :add_option('all', 'boolean')
-  :add_option('filter', 'record')
+  :add_option({ name = 'force', type = 'boolean' })
+  :add_option({ name = 'all', type = 'boolean' })
+  :add_option({ name = 'filter', type = 'record' })
   :build(_opts)

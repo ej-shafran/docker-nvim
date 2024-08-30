@@ -4,7 +4,7 @@ local Command = require('docker.command')
 local _opts
 
 return Command.new({ 'image', 'import' })
-  :add_list_option('change', 'string')
-  :add_option('message', 'string')
-  :add_option('platform', 'string')
+  :add_option({ name = 'change', type = 'string', list = true })
+  :add_option({ name = 'message', type = 'string' })
+  :add_option({ name = 'platform', type = 'string' })
   :build_with_args(_opts, { min = 1, max = 2 })

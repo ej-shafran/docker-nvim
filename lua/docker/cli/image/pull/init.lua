@@ -4,8 +4,8 @@ local Command = require('docker.command')
 local _opts
 
 return Command.new({ 'image', 'pull' })
-  :add_option('all_tags', 'boolean')
-  :add_option('disable_content_trust', 'boolean')
-  :add_option('platform', 'string')
-  :add_option('quiet', 'boolean')
+  :add_option({ name = 'all_tags', type = 'boolean' })
+  :add_option({ name = 'disable_content_trust', type = 'boolean' })
+  :add_option({ name = 'platform', type = 'string' })
+  :add_option({ name = 'quiet', type = 'boolean' })
   :build_with_arg(_opts)

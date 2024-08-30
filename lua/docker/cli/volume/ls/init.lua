@@ -4,7 +4,7 @@ local Command = require('docker.command')
 local _opts
 
 return Command.new({ 'volume', 'ls' })
-  :add_option('filter', 'record')
-  :add_option('format', 'string')
-  :add_option('quiet', 'boolean')
+  :add_option({ name = 'filter', type = 'record' })
+  :add_option({ name = 'format', type = 'string' })
+  :add_option({ name = 'quiet', type = 'boolean' })
   :build(_opts)

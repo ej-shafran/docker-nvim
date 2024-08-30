@@ -4,6 +4,6 @@ local Command = require('docker.command')
 local _opts
 
 return Command.new({ 'container', 'inspect' })
-  :add_option('format', 'string')
-  :add_option('size', 'boolean')
+  :add_option({ name = 'format', type = 'string' })
+  :add_option({ name = 'size', type = 'boolean' })
   :build_with_args(_opts, { min = 1 })

@@ -4,7 +4,7 @@ local Command = require('docker.command')
 local _opts
 
 return Command.new({ 'container', 'attach' })
-  :add_option('detach_keys', 'string')
-  :add_option('no_stdin', 'boolean')
-  :add_option('sig_proxy', 'boolean')
+  :add_option({ name = 'detach_keys', type = 'string' })
+  :add_option({ name = 'no_stdin', type = 'boolean' })
+  :add_option({ name = 'sig_proxy', type = 'boolean' })
   :build_with_arg(_opts)

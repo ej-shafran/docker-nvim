@@ -4,6 +4,6 @@ local Command = require('docker.command')
 local _opts
 
 return Command.new({ 'image', 'rm' })
-  :add_option('force', 'boolean')
-  :add_option('no_prune', 'boolean')
+  :add_option({ name = 'force', type = 'boolean' })
+  :add_option({ name = 'no_prune', type = 'boolean' })
   :build_with_args(_opts)

@@ -4,8 +4,8 @@ local Command = require('docker.command')
 local _opts
 
 return Command.new({ 'image', 'ls' })
-  :add_option('format', 'string')
-  :add_option('all', 'boolean')
-  :add_option('digests', 'boolean')
-  :add_option('filter', 'record')
+  :add_option({ name = 'format', type = 'string' })
+  :add_option({ name = 'all', type = 'boolean' })
+  :add_option({ name = 'digests', type = 'boolean' })
+  :add_option({ name = 'filter', type = 'record' })
   :build(_opts)

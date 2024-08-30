@@ -4,6 +4,6 @@ local Command = require('docker.command')
 local _opts
 
 return Command.new({ 'container', 'stop' })
-  :add_option('signal', 'string')
-  :add_option('time', 'number')
+  :add_option({ name = 'signal', type = 'string' })
+  :add_option({ name = 'time', type = 'number' })
   :build_with_args(_opts)

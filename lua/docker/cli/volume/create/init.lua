@@ -4,7 +4,7 @@ local Command = require('docker.command')
 local _opts
 
 return Command.new({ 'volume', 'create' })
-  :add_option('driver', 'string')
-  :add_list_option('label', 'string')
-  :add_list_option('opt', 'string')
+  :add_option({ name = 'driver', type = 'string' })
+  :add_option({ name = 'label', type = 'string', list = true })
+  :add_option({ name = 'opt', type = 'string', list = true })
   :build_with_args(_opts, { max = 1 })

@@ -12,9 +12,9 @@
 --- end
 ---
 --- local ls = Command.new({ 'image', 'ls', '--format', 'json' })
----    :add_option('all', 'boolean')
----    :add_option('digests', 'boolean')
----    :add_option('filter', 'record')
+---    :add_option({ name = 'all', type = 'boolean' })
+---    :add_option({ name = 'digests', type = 'boolean' })
+---    :add_option({ name = 'filter', type = 'record' })
 ---    :build(ls_handler)
 ---
 --- -- You can now call this function like:
@@ -25,7 +25,8 @@
 ---
 ---@class docker.Command
 ---
----@field private _command string[]
+---@field private _command string
+---@field private _args string[]
 ---@field private _arg_kind "fixed"|"variable"
 ---@field private _arg_count integer|{ max?: integer, min?: integer }
 ---@field private _options table<string, docker.command.Serialize>
@@ -155,15 +156,17 @@ local type_to_validator = {
 
 ---@private
 ---
----@param _command string[]
+---@param _args string[]
+---@param _command string
 ---@return docker.Command
-function Command._new(_command)
+function Command._new(_args, _command)
   ---@type docker.Command
   local obj = {
+    _command = _command,
     _arg_kind = 'fixed',
     _arg_count = 0,
     _options = {},
-    _command = _command,
+    _args = _args,
     _validators = {},
   }
   setmetatable(obj, Command)
@@ -194,8 +197,8 @@ end
 ---@param opts unknown
 ---@return string[]
 function Command:_serialize(args, opts)
-  local cmd = { 'docker' }
-  for _, word in ipairs(self._command) do
+  local cmd = { self._command }
+  for _, word in ipairs(self._args) do
     table.insert(cmd, word)
   end
 
@@ -216,91 +219,80 @@ end
 
 ---Initialize a `docker` CLI command function.
 ---
----@param command string[] the arguments to always append to `docker`; e.g. `{ 'image', 'ls', '--format', 'json' }`
+---@param args string[] the arguments to always append to `docker`; e.g. `{ 'image', 'ls', '--format', 'json' }`
 ---@return docker.Command
-function Command.new(command)
-  return Command._new(command)
+function Command.new(args)
+  return Command._new(args, 'docker')
 end
 
----Add a new CLI option to this command.
+---Initialize a non-`docker` CLI command function.
 ---
----@param name string the name of the option; transformed when calling the CLI to turn "_" into "-"
----@param serialize docker.command.Serialize a function to transform this option's value to its CLI representation
----@param validator docker.command.Validator a function to validate this option's value
+---@param command string the command to run
+---@param args string[] the arguments to append to the command
 ---@return docker.Command
-function Command:add_custom_option(name, serialize, validator)
-  self._options[name] = serialize
-  self._validators[name] = validator
-  return self
+function Command.non_docker(command, args)
+  return Command._new(args, command)
 end
 
----Add a new CLI option to this command, with a well-known type.
+---Add a CLI option to this command.
 ---
----@param name string the name of the option; transformed when calling the CLI to turn "_" into "-"
----@param option_type docker.command.OptionType the type of value that makes sense for this option
+---@param opts docker.command.OptionOpts
 ---@return docker.Command
-function Command:add_option(name, option_type)
-  local serialize = type_to_serialize[option_type]
-  local validator = type_to_validator[option_type]
-  return self:add_custom_option(name, serialize, validator)
-end
-
----Add a new CLI option to this command, whose type is some list.
----
----@param name string the name of the option; transformed when calling the CLI to turn "_" into "-"
----@param item_serialize docker.command.Serialize a function to transform each item of this option's value to its CLI representation
----@param item_validator docker.command.Validator a function to validate each item of this option's value
----@return docker.Command
-function Command:add_custom_list_option(name, item_serialize, item_validator)
-  ---@type docker.command.Serialize
-  local function serialize(name_, value)
-    ---@cast value unknown[]
-    return vim
-      .iter(value)
-      :map(function(item)
-        return item_serialize(name_, item)
-      end)
-      :flatten()
-      :totable()
+function Command:add_option(opts)
+  local base_serialize
+  local base_validator
+  if opts.type then
+    base_serialize = type_to_serialize[opts.type]
+    base_validator = type_to_validator[opts.type]
+  else
+    base_serialize = opts.serialize
+    base_validator = opts.validator
   end
 
-  ---@type docker.command.Validator
-  local function validator(value, optional)
-    local item_spec = item_validator(nil, true)
-
-    return {
-      value,
-      function(val)
-        if optional and val == nil then
-          return true
-        end
-
-        if type(val) ~= 'table' then
-          return false
-        end
-
-        return vim.iter(val):all(function(item)
-          local result = item_validator(item, false)
-          local ok = pcall(vim.validate, { item = result })
-          return ok
+  local serialize
+  local validator
+  if not opts.list then
+    serialize = base_serialize
+    validator = base_validator
+  else
+    serialize = function(name_, value)
+      ---@cast value unknown[]
+      return vim
+        .iter(value)
+        :map(function(item)
+          return base_serialize(name_, item)
         end)
-      end,
-      ('list<%s>'):format(type(item_spec[2]) == 'string' and item_spec[2] or item_spec[3]),
-    }
+        :flatten()
+        :totable()
+    end
+    validator = function(value, optional)
+      local item_spec = base_validator(nil, true)
+
+      return {
+        value,
+        function(val)
+          if optional and val == nil then
+            return true
+          end
+
+          if type(val) ~= 'table' then
+            return false
+          end
+
+          return vim.iter(val):all(function(item)
+            local result = base_validator(item, false)
+            local ok = pcall(vim.validate, { item = result })
+            return ok
+          end)
+        end,
+        ('list<%s>'):format(type(item_spec[2]) == 'string' and item_spec[2] or item_spec[3]),
+      }
+    end
   end
 
-  return self:add_custom_option(name, serialize, validator)
-end
-
----Add a new CLI option to this command, whose type is a list of some well-known type.
----
----@param name string the name of the option; transformed when calling the CLI to turn "_" into "-"
----@param option_type docker.command.OptionType the type of value that makes sense for the items of this option
----@return docker.Command
-function Command:add_list_option(name, option_type)
-  local item_serialize = type_to_serialize[option_type]
-  local item_validator = type_to_validator[option_type]
-  return self:add_custom_list_option(name, item_serialize, item_validator)
+  self._options[opts.name] = serialize
+  self._validators[opts.name] = validator
+  return self
 end
 
 ---Get the final result as a function which only receives options.
@@ -343,24 +335,10 @@ function Command:build(_)
         )
       end
     end
+
     opts = opts or {}
-
     self:_validate(args, opts)
-
-    local cmd = self:_serialize(args, opts)
-
-    -- TODO: logging
-    -- print(vim
-    --   .iter(cmd)
-    --   :map(function(word)
-    --     if string.match(word, '%s+') ~= nil then
-    --       return vim.fn.shellescape(word)
-    --     end
-    --     return word
-    --   end)
-    --   :join(' '))
-
-    return Result.new(cmd)
+    return Result.new(self:_serialize(args, opts))
   end
 end
 
